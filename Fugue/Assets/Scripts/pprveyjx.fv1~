@@ -1,0 +1,314 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using QuantumTek.QuantumDialogue;
+using QuantumTek.QuantumDialogue.Demo;
+
+
+public class DialogueManager : MonoBehaviour
+{
+    public bool conversationState = false;
+    private Quaternion _targetRotation1 = Quaternion.identity;
+    private Quaternion _targetRotation2 = Quaternion.identity;
+    private Quaternion _startRotation = Quaternion.identity;
+    public Transform playerCamera;
+    public Transform NPC;
+    public GameObject Dialogue;
+    public float turningRate = 1f;
+    public AudioSource moan;
+    public QD_DialogueDemo _dm;
+    public static DialogueManager _instance;
+    [SerializeField]
+    public Camera mainCamera;
+    public Vector2 StartPos;
+    public bool hasLerped;
+    public bool Into = false;
+    public bool back = false;
+    public bool canMove = false;
+    public Vector2 mousePos;
+    public Vector3 CalcPos;
+    public Quaternion Calced;
+    public Quaternion Cal;
+    public bool LerpToMouse = false;
+
+    public bool playLerpSequence = false;
+    int currentPosition = 0;
+    public float angle;
+    public float anglex;
+   
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        if(_instance == null)
+        {
+            _instance = this;
+        }
+        else
+        {
+            Destroy(this);
+        }
+
+    }
+
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+        if (_dm.ended)
+        {
+      
+            conversationState = false;
+
+
+            Into = false;
+/*
+            if (back)
+            {
+
+                canMove = true;
+                back = false;
+            }*/
+
+        }
+
+        //mousePos = new Vector2(GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+
+        /*mousePos = Input.mousePosition;
+        mousePos.z = 1f;
+*/
+
+        /*if (canMove)
+        {
+            LerpObjectToMousePoint(playerCamera);
+        }*/
+
+        /*   if (LerpToMouse)
+           {
+               Vector3 direction2 = worldPosition - playerCamera.transform.position;
+
+               Quaternion toRotation2 = Quaternion.LookRotation(direction2);
+
+               StartPos = toRotation2;
+               playerCamera.transform.rotation = Cal;
+
+           }
+   */
+
+        /*
+                if (Into)
+                {
+                    //StartCoroutine(LerpPositionToOP(playerCamera, NPC.position, 1f));
+                    //StartCoroutine(Lerped());
+
+                    CalcPos = NPC.position - playerCamera.transform.position;
+                    Calced = Quaternion.Euler(CalcPos);
+                    playerCamera.transform.rotation = Quaternion.Lerp(playerCamera.transform.rotation, Calced, 1 * Time.deltaTime);
+
+
+
+                    //Into = false;
+                }*/
+
+        /*
+                if (playLerpSequence)
+                {
+                    if (!conversationState)
+                    {
+                        playLerpSequence = false;
+                        //StartCoroutine(LerpPositionToOP(player, positions[currentPosition].position, 1f));
+                        LerpPosition(NPC, positions[currentPosition].position);
+
+                        currentPosition += 1;
+                        if (currentPosition >= positions.Length)
+                        {
+                            currentPosition = 0;
+                        }
+                    }
+
+                    playLerpSequence = false;
+                }*/
+
+    }
+
+    private void FixedUpdate()
+    {
+
+        if (Into)
+        {
+            //StartCoroutine(LerpPositionToOP(playerCamera, NPC.position, 1f));
+            //StartCoroutine(Lerped());
+
+            CalcPos = NPC.position - playerCamera.transform.position;
+            Calced = Quaternion.LookRotation(CalcPos);
+
+            //angle = Vector3.Angle(playerCamera.transform.position, NPC.position);
+            Vector3 screenPos = mainCamera.WorldToScreenPoint(CalcPos);
+            angle = screenPos.y;
+            anglex = screenPos.x;
+
+
+            //playerCamera.transform.rotation = Quaternion.Lerp(playerCamera.transform.rotation, Calced, 2 * Time.deltaTime);
+
+
+
+            //Into = false;
+        }
+
+        if (back)
+        {
+     
+            //StartPos = mainCamera.ScreenToWorldPoint(mousePos);
+
+ /*           Vector3 _dest = playerCamera.transform.position - StartPos;
+            Quaternion Destination = Quaternion.LookRotation(_dest);
+            playerCamera.transform.rotation = Quaternion.Lerp(playerCamera.transform.rotation, Destination, 2 * Time.deltaTime);*/
+        }
+    }
+    private void LerpObjectToMousePoint(Transform _tr)
+    {
+        ToggleMouseLockState(true);
+        canMove = false;
+
+     /*   var mousePos = Input.mousePosition;
+        mousePos.z = 10f;
+        mousePos = mainCamera.ScreenToWorldPoint(mousePos);*/
+
+        StartCoroutine(LerpPositionFromOP(_tr, mousePos, 1f, true));
+    }
+
+    private void FollowMouse()
+    {
+        back = true;
+    }
+
+
+    //This sets our mouse locked and unlocked
+    private void ToggleMouseLockState(bool _toggle)
+    {
+        if (_toggle)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.None;
+        }
+    }
+ 
+    public IEnumerator Lerped()
+    {
+        back = true;
+        conversationState = true;
+        Into = true;
+        yield return new WaitForSeconds(0.1f);
+
+        
+
+        //conversationState = true;
+
+        yield return new WaitForSeconds(2f);
+/*
+        Vector3 Dest = NPC.position - playerCamera.transform.position;
+        Quaternion _destination = Quaternion.LookRotation(Dest);
+        playerCamera.transform.rotation = Quaternion.Lerp(playerCamera.transform.rotation, _destination, 1 * Time.deltaTime);*/
+
+
+       
+        yield return new WaitForEndOfFrame();
+
+        //Into = false;
+
+        Cursor.lockState = CursorLockMode.None;
+
+
+        yield break;
+       
+    }
+
+    public IEnumerator LerpedToMouse()
+    {
+        back = true;
+
+        conversationState = false;
+        yield return new WaitForSeconds(0.1f);
+
+        Cursor.lockState = CursorLockMode.None;
+
+        //conversationState = true;
+
+        yield return new WaitForSeconds(2f);
+        /*
+                Vector3 Dest = NPC.position - playerCamera.transform.position;
+                Quaternion _destination = Quaternion.LookRotation(Dest);
+                playerCamera.transform.rotation = Quaternion.Lerp(playerCamera.transform.rotation, _destination, 1 * Time.deltaTime);*/
+
+
+     
+        back = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        conversationState = false;
+
+        yield break;
+    }
+
+    IEnumerator LerpPositionToOP(Transform _transform, Vector3 _destination, float _duration)
+    {
+        Cursor.lockState = CursorLockMode.None;
+        conversationState = true;
+  
+        
+
+        float elapsedTime = 0;
+        Quaternion initialPosition = _transform.localRotation; 
+        Vector3 DestPos = _transform.position - _destination;
+        Quaternion Destination = Quaternion.LookRotation(DestPos);
+
+        while (elapsedTime <= _duration)
+        {
+            Quaternion newPos = Quaternion.RotateTowards(initialPosition, Destination, elapsedTime / _duration);
+            _transform.localRotation = newPos;
+
+            yield return null;
+            elapsedTime += Time.deltaTime;
+            break;
+
+
+        }
+
+        _transform.localRotation = Destination;
+
+        canMove = false;
+        Into = false;
+        yield break;
+    }
+
+    IEnumerator LerpPositionFromOP(Transform _transform, Vector3 _destination, float _duration, bool _unlockMouse)
+    {
+        float elapsedTime = 0;
+        Quaternion initialPosition = _transform.rotation;
+        //Vector3 dest = _destination - _transform.position;
+        Quaternion Destination = Quaternion.LookRotation(_destination);
+        while (elapsedTime < _duration)
+        {
+            Quaternion newPos = Quaternion.Slerp(initialPosition, Destination, elapsedTime / _duration);
+            _transform.rotation = newPos;
+
+            yield return null;
+            elapsedTime += Time.deltaTime;
+        }
+
+        _transform.rotation = Destination;
+
+        //Unlocks the mouse at the end of the lerp
+        // ToggleMouseLockState(false);
+        Into = false;
+
+        yield break;
+    }
+
+
+
+}
