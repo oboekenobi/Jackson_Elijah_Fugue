@@ -27,6 +27,7 @@ public class FirstPersonMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        
         if (!dm.conversationState)
         {
             // Update IsRunning from input.

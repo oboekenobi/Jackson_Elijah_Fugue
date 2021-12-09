@@ -36,6 +36,7 @@ public class FirstPersonLook : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
     }
+    
 
     void Update()
     {
@@ -51,14 +52,15 @@ public class FirstPersonLook : MonoBehaviour
         if (!dm.conversationState)
         {
             
-            //mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+            mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+            
 
             //parentRotate.rotation = gameObject.transform.rotation;
         }
         
 
         //mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
-        mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+        //mouseDelta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
 
         rawFrameVelocity = Vector2.Scale(mouseDelta, Vector2.one * sensitivity);
         frameVelocity = Vector2.Lerp(frameVelocity, rawFrameVelocity, 1 / smoothing);
@@ -75,15 +77,17 @@ public class FirstPersonLook : MonoBehaviour
             character.localRotation = Quaternion.AngleAxis(velocity.x, Vector3.up);
         }
 
+        //character.localRotation = Quaternion.AngleAxis(velocity.x, Vector3.up);
+
+        
+
 
         anglex = velocity.x;
         // Rotate camera up-down and controller left-right from velocity.
 
         if (dm.conversationState)
         { 
-            //parentRotate.localRotation = Quaternion.AngleAxis(-velocity.y, Vector3.right);
-            //character.localRotation = Quaternion.AngleAxis(dm.AngleAxisFreeze, Vector3.up);
-            //dm.playerCamera.localRotation = Quaternion.AngleAxis(-velocity.y, Vector3.right);
+            
         }
       
 

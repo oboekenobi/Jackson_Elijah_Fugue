@@ -21,8 +21,6 @@ public class PSXPostProcessEffect : MonoBehaviour
 
     void Start()
     {
-        Application.targetFrameRate = framerateLimit;
-        QualitySettings.vSyncCount = 0;
         if (_Shader != null && _Shader.isSupported)
         {
             _Material = new Material(_Shader);
@@ -36,7 +34,7 @@ public class PSXPostProcessEffect : MonoBehaviour
 
     void Update()
     {
-        /*Application.targetFrameRate = framerateLimit;*/
+        Application.targetFrameRate = framerateLimit;
     }
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)

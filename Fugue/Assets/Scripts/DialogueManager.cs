@@ -270,17 +270,19 @@ public class DialogueManager : MonoBehaviour
                 Quaternion destCamera = Quaternion.LookRotation(pointPosCamera);
                 Quaternion targetCamera = Quaternion.Euler(destCamera.eulerAngles.x, 0, 0);
                 targetCam = targetCamera;
+
+                
                 
 
-                playerCamera.transform.localRotation = Quaternion.Slerp(playerCamera.transform.localRotation, targetCamera, 2 * Time.deltaTime);
+                playerCamera.transform.rotation = Quaternion.Slerp(playerCamera.transform.rotation, destCamera, 1 * Time.deltaTime);
 
-                Vector3 pointPosCharacter = NPC.position - Character.transform.position;
-                //Vector3 pointPosCharacterRotate = new Vector3(0, pointPosCharacter.y, 0);
-                Quaternion destCharacter = Quaternion.LookRotation(pointPosCharacter);
-                Quaternion targetCharacter = Quaternion.Euler(new Vector3(0, destCharacter.eulerAngles.y, 0));
-                targetChar = targetCharacter;
+                // Vector3 pointPosCharacter = NPC.position - Character.transform.position;
+                // //Vector3 pointPosCharacterRotate = new Vector3(0, pointPosCharacter.y, 0);
+                // Quaternion destCharacter = Quaternion.LookRotation(pointPosCharacter);
+                // Quaternion targetCharacter = Quaternion.Euler(new Vector3(0, destCharacter.eulerAngles.y, 0));
+                // targetChar = targetCharacter;
 
-                Character.transform.localRotation = Quaternion.Slerp(Character.transform.localRotation, targetCharacter, 2 * Time.deltaTime);
+                // Character.transform.localRotation = Quaternion.Slerp(Character.transform.localRotation, targetCharacter, 2 * Time.deltaTime);
             }
            
       
@@ -294,6 +296,11 @@ public class DialogueManager : MonoBehaviour
         {
             if (_dm.ended)
             {
+                if(canOpenGate)
+                {
+                    openGate = true;
+                }
+
                 Cursor.lockState = CursorLockMode.Locked;
                 //NextScene();
                 //conversationState = false;
@@ -322,15 +329,48 @@ public class DialogueManager : MonoBehaviour
         if (back)
         {
             
-            Character.transform.Translate(Vector3.back * 0.005f);
+            playerCamera.transform.Translate(Vector3.back * 0.005f);
             
+        }
 
+
+        
+        if (backMouse)
+        {
+            
+            if(NPC != null)
+            {
+                Vector3 pointPosCamera = NPC.position - playerCamera.transform.position;
+                // Quaternion pointPosCameraRotate = new Vector3(pointPosCamera.x, 0, 0);
+                Quaternion destCamera = Quaternion.LookRotation(pointPosCamera);
+                Quaternion targetCamera = Quaternion.Euler(destCamera.eulerAngles.x, 0, 0);
+                targetCam = targetCamera;
+                
+
+                playerCamera.transform.localRotation = Quaternion.Slerp(playerCamera.transform.localRotation, StartPos, 2 * Time.deltaTime);
+
+                //if(playerCamera)
+
+                // Vector3 pointPosCharacter = NPC.position - Character.transform.position;
+                // //Vector3 pointPosCharacterRotate = new Vector3(0, pointPosCharacter.y, 0);
+                // Quaternion destCharacter = Quaternion.LookRotation(pointPosCharacter);
+                // Quaternion targetCharacter = Quaternion.Euler(new Vector3(0, destCharacter.eulerAngles.y, 0));
+                // targetChar = targetCharacter;
+
+                // Character.transform.localRotation = Quaternion.Slerp(Character.transform.localRotation, CharStartPos, 2 * Time.deltaTime);
+            }
+           
+      
         }
     }
-    // public void LerpObjectToMousePoint()
-    // {
-    //     StartCoroutine(LerpedToMouse(playerCamera.rotation, StartPos, 2f));
-    // }
+    public void LerpObjectToMousePoint()
+    {
+        StartCoroutine(LerpedToMouse());
+    }
+
+    public bool canOpenGate;
+    public bool openGate;
+    public Animator _anim;
 
     private void FollowMouse()
     {
@@ -357,34 +397,45 @@ public class DialogueManager : MonoBehaviour
     
     public Transform Character;
     
+
+    public Quaternion CharStartPos;
     
     public IEnumerator Lerped()
     {
         //back = true;
-        AngleAxisFreeze = firstPerson.anglex;
-        playerEnterStart = playerController.position;
-        playerEnterStartRotation = playerController.rotation;
+        //AngleAxisFreeze = firstPerson.anglex;
+        //playerEnterStart = playerController.position;
+        //playerEnterStartRotation = playerController.rotation;
 
         //back = true;
 
         //yield return new WaitForSeconds(0.1f);
+
+        //Into = true;
+
+        //yield return new WaitForSeconds(0.3f);
+
         conversationState = true;
 
-        yield return new WaitForSeconds(0.1f);
+        //yield return new WaitForSeconds(0.2f);
+        CharStartPos = Character.rotation;
+        StartPos = playerCamera.rotation;  
 
-        StartPos = playerCamera.rotation;
-
-        yield return new WaitForSeconds(0.4f);
+        //yield return new WaitForSeconds(0.4f);
 
         FadeInObject();
 
+        yield return new WaitForSeconds(1f);
 
-        Into = true;
+       Into = true;
+
+
+        //conversationState = true;
 
 
         yield return new WaitForSeconds(2f);
     
-        Into = false; 
+        //Into = false; 
         //playerCamera.rotation = playerCamera.rotation;
         
         _lerped = true;
@@ -401,6 +452,24 @@ public class DialogueManager : MonoBehaviour
 
         yield break;
        
+    }
+
+    public bool backMouse;
+
+    public IEnumerator LerpedToMouse()
+    {
+        backMouse = true;
+
+        Into = false;
+
+        yield return new WaitForSeconds(3f);
+
+        backMouse = false;
+        conversationState = false;
+
+
+        
+        yield break;
     }
 
 
@@ -421,47 +490,23 @@ public class DialogueManager : MonoBehaviour
                 yield return new WaitForSeconds(3f);
 
                 back = false;
+
+                playerCamera.transform.localPosition = new Vector3(0, playerCamera.transform.localPosition.y, 0);
             }
 
 
         }
 
+        Into = false;
+
 
         if(nextSceneString == "please Stop")
         {
-            conversationState = false;
+            StartCoroutine(LerpedToMouse());
         }
-        // if (!sceneFinished)
-        // {
-        //     FadeOutObjects();
-
-        //     back = true;
-
-        //     yield return new WaitForSeconds(2f);
-
-        //     FadeOutObject();
-
-        //     yield return new WaitForSeconds(3f);
-
-        //     back = false;
-        // }
-        //FadeOutObjects();
-        
-
-        // back = true;
-
-        // yield return new WaitForSeconds(2f);
-
-        // FadeOutObject();
-
-        // yield return new WaitForSeconds(3f);
-
-        // back = false;
-        
-        //NextScene();
+      
         NextScene();
 
-        //yield return new WaitForSeconds(1f);
 
         if (sceneFinished)
         {
@@ -469,43 +514,28 @@ public class DialogueManager : MonoBehaviour
             FadeInObjects();
         }
 
-        //_dm.ended = false;
-
         yield return new WaitForSeconds(3f);
-        
-        
 
-        // if(_dm.ended)
-        // {
-        //     conversationState = false;
-        // }
+       
 
         yield break;
     }
 
     public IEnumerator TransitionFromScene()
     {
-        //FadeOutObjects();
-
-        //back = true;
-        yield return new WaitForSeconds(1f);
         //conversationState = false;
-        
-        //yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSeconds(1f);
+        conversationState = false;
         NextScene();
-        //back = false;
         yield return new WaitForSeconds(0.4f);
-        //directionalLight.GetComponent<Light>().intensity = 0.001f;
         Cursor.lockState = CursorLockMode.Locked;
         FadeInObjects();
 
-        //StayStill = true;
 
         yield return new WaitForSeconds(2f);
 
-        //Cursor.lockState = CursorLockMode.Locked;
         nextSceneString = ("");
-        conversationState = false;
+        //conversationState = false;
         sceneFinished = false;
         yield break;
     }
@@ -519,6 +549,8 @@ public class DialogueManager : MonoBehaviour
     public float threshold = 0.05f;
 
     public float time;
+
+    public GameObject CarCrashCollider;
     
 
     public IEnumerator CarCrash()
@@ -535,7 +567,11 @@ public class DialogueManager : MonoBehaviour
         float elapsedTime = 0;
         time = elapsedTime;
 
-        Dialogue.SetActive(true);
+        //conversationState = true;
+
+        //Dialogue.SetActive(true);
+
+        CarCrashCollider.SetActive(true);
 
 
         while (elapsedTime <= threshold)
@@ -548,6 +584,10 @@ public class DialogueManager : MonoBehaviour
             //StupidCar.transform.Translate(Vector3.forward, speed);
 
             yield return null;
+
+            Dialogue.SetActive(true);
+
+
 
 
             elapsedTime += Time.deltaTime;
@@ -583,9 +623,9 @@ public class DialogueManager : MonoBehaviour
             if(nextSceneString == "car")
             {
                 _gameHandler.car = true;
-                directionalLight.GetComponent<Light>().intensity = 0.2f;
+                directionalLight.GetComponent<Light>().intensity = 0.5f;
                 RenderSettings.fogColor = new Color(0.177f, 0.2024f, 0.2452f, 1f);
-                RenderSettings.fogDensity = 0.05f;
+                RenderSettings.fogDensity = 0.04f;
                 StartCoroutine(CarCrash());
                 conversationState = false;
             }

@@ -20,7 +20,7 @@ MonoBehaviour:
     Name: Ghost One
     FirstMessage: 10
   - ID: 14
-    Name: Book Enterance
+    Name: Book
     FirstMessage: 16
   - ID: 30
     Name: Phone Conversation
@@ -40,6 +40,9 @@ MonoBehaviour:
   - ID: 85
     Name: Mia House
     FirstMessage: 86
+  - ID: 92
+    Name: Car Crash
+    FirstMessage: 93
   Speakers: []
   Messages:
   - ID: 10
@@ -385,6 +388,14 @@ MonoBehaviour:
     PreviousMessage: 90
     NextMessage: -1
     MessageText: Come on lets get inside.
+    Clip: {fileID: 0}
+    da: {fileID: 0}
+  - ID: 93
+    Speaker: -1
+    SpeakerName: 
+    PreviousMessage: -1
+    NextMessage: -1
+    MessageText: Watch OUT!
     Clip: {fileID: 0}
     da: {fileID: 0}
   Choices:

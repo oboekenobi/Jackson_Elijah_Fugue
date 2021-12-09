@@ -162,6 +162,7 @@ public class GameHandler : MonoBehaviour
            houseCam.SetActive(false);
            swingCam.SetActive(false);
            cafeCam.SetActive(false);
+           carCam.SetActive(true);
            car = false;
            
     }
